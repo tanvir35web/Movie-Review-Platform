@@ -1,4 +1,5 @@
 const db = require('../db');
+const { imageUpload } = require('../services/imageUpload');
 
 
 async function handleGetAllMovies(req, res) {
@@ -31,8 +32,11 @@ async function handleCreateMovie(req, res) {
         res.status(400).send('Missing required fields');
         return;
     }
+
     const { title, genre, release_date, director, synopsis } = req.body;
-    db.query('INSERT INTO Movies (title, genre, release_date, director, synopsis) VALUES (?, ?, ?, ?, ?)', [title, genre, release_date, director, synopsis], (err, results) => {
+    const movie_poster = await imageUpload(req);
+
+    db.query('INSERT INTO Movies (title, genre, release_date, director, synopsis, poster_photo) VALUES (?, ?, ?, ?, ?, ?)', [title, genre, release_date, director, synopsis, movie_poster], (err, results) => {
         if (err) {
             res.status(500).send('Database query error to create movie');
             return;
@@ -44,7 +48,9 @@ async function handleCreateMovie(req, res) {
 async function handleUpdateMovie(req, res) {
     const { id } = req.params;
     const { title, genre, release_date, director, synopsis } = req.body;
-    db.query('UPDATE Movies SET title = ?, genre = ?, release_date = ?, director = ?, synopsis = ? WHERE movie_id = ?', [title, genre, release_date, director, synopsis, id], (err, results) => {
+    const movie_poster = await imageUpload(req);
+
+    db.query('UPDATE Movies SET title = ?, genre = ?, release_date = ?, director = ?, synopsis = ?, poster_photo = ? WHERE movie_id = ?', [title, genre, release_date, director, synopsis, movie_poster, id], (err, results) => {
         if (err) {
             res.status(500).send('Database query error to update movie');
             return;

@@ -19,6 +19,7 @@ CREATE TABLE Movies (
     release_date DATE NOT NULL,
     director VARCHAR(100),
     synopsis TEXT,
+    poster_photo VARCHAR(1200) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
