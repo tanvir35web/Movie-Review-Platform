@@ -34,14 +34,25 @@ async function handleCreateMovie(req, res) {
     }
 
     const { title, genre, release_date, director, synopsis } = req.body;
-    const movie_poster = await imageUpload(req);
+    const movie_poster = req.file ? await imageUpload(req) : null;
 
     db.query('INSERT INTO Movies (title, genre, release_date, director, synopsis, poster_photo) VALUES (?, ?, ?, ?, ?, ?)', [title, genre, release_date, director, synopsis, movie_poster], (err, results) => {
         if (err) {
             res.status(500).send('Database query error to create movie');
             return;
         }
-        res.status(201).send('Movie created successfully with id: ' + results.insertId);
+        res.status(201).json({
+            "massage": "Movie created successfully",
+            "data": {
+                "movie_id": results.insertId,
+                title,
+                genre,
+                release_date,
+                director,
+                synopsis,
+                movie_poster
+            }
+        });
     });
 }
 
