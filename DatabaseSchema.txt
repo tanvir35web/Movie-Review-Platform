@@ -1,0 +1,35 @@
+CREATE DATABASE movie_review_platform;
+
+USE movie_review_platform;
+
+-- Users Table
+CREATE TABLE Users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Movies Table
+CREATE TABLE Movies (
+    movie_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    genre VARCHAR(50) NOT NULL,
+    release_date DATE NOT NULL,
+    director VARCHAR(100),
+    synopsis TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Reviews Table
+CREATE TABLE Reviews (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    movie_id INT,
+    user_id INT,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    review_text TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (movie_id) REFERENCES Movies(movie_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+);
