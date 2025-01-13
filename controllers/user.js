@@ -39,10 +39,37 @@ async function handleLoginUser(req, res) {
         if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
         const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+        const user_details = {
+            user_id: user.user_id,
+            username: username,
+            user_role: user.role,
+        }
 
-        res.status(200).json({ message: 'Login successful', token });
+        res.status(200).json({ message: 'Login successful', user_details, token });
     });
 }
+
+async function handleGetUserById(req, res) {
+    const { user_id } = req.params;
+  
+    if (!user_id) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+  
+    const query = "SELECT * FROM users WHERE user_id = ?";
+    db.query(query, [user_id], (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: "Database query error", err });
+      }
+  
+      if (results.length === 0) {
+        return res.status(404).json({ error: "User not found" });
+      }
+  
+      res.status(200).json(results[0]);
+    });
+  }
+  
 
 async function handleProtectedRoute(req, res) {
     const token = req.headers.authorization;
@@ -61,5 +88,6 @@ async function handleProtectedRoute(req, res) {
 module.exports = {
     handleRegisterUser,
     handleLoginUser,
-    handleProtectedRoute
+    handleProtectedRoute,
+    handleGetUserById,
 };

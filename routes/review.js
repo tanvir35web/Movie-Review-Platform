@@ -1,8 +1,8 @@
 const express = require("express");
-const { handleAddReview, handleUpdateReview, handleGetMovieReviews } = require("../controllers/review");
+const { handleAddReview, handleUpdateReview, handleGetMovieReviewsByUserId } = require("../controllers/review");
 const router = express.Router();
 
-router.get('/:movie_id', handleGetMovieReviews);
+router.get('/:movie_id', handleGetMovieReviewsByUserId);
 router.post("/", handleAddReview);
 router.patch("/", handleUpdateReview)
 

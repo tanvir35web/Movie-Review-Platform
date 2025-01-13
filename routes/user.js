@@ -3,13 +3,15 @@ const router = express.Router();
 const {
     handleRegisterUser,
     handleProtectedRoute,
-    handleLoginUser } = require('../controllers/user');
+    handleLoginUser, 
+    handleGetUserById} = require('../controllers/user');
 
 
 
 router.post('/login', handleLoginUser);
 router.post('/register', handleRegisterUser);
 router.get('/protected', handleProtectedRoute);
+router.get('/:user_id', handleGetUserById);
 
 
 

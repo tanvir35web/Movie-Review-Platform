@@ -41,20 +41,20 @@ async function handleAddReview(req, res) {
 
 async function handleUpdateReview(req, res) {
   const { review_id, rating, review_text } = req.body;
-  const { user_id } = req.body; // Assuming user_id is passed in request body
+  const { user_id, movie_id } = req.body; // Assuming user_id is passed in request body
 
   console.log("handleUpdateReviewLog : ", req.body);
 
   // Validate required fields
-  if (!review_id || !rating || !review_text || !user_id) {
+  if (!review_id || !rating || !review_text || !user_id || !movie_id) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
   // First verify the review exists and belongs to the user
   const checkQuery =
-    "SELECT * FROM reviews WHERE review_id = ? AND user_id = ?";
+    "SELECT * FROM reviews WHERE review_id = ? AND user_id = ? AND movie_id = ?";
 
-  db.query(checkQuery, [review_id, user_id], (checkErr, checkResults) => {
+  db.query(checkQuery, [review_id, user_id, movie_id], (checkErr, checkResults) => {
     if (checkErr) {
       return res.status(500).json({
         error: "Error verifying review ownership",
@@ -72,12 +72,12 @@ async function handleUpdateReview(req, res) {
     const updateQuery = `
       UPDATE reviews 
       SET rating = ?, review_text = ? 
-      WHERE review_id = ? AND user_id = ?
+      WHERE review_id = ? AND user_id = ? AND movie_id = ?
     `;
 
     db.query(
       updateQuery,
-      [rating, review_text, review_id, user_id],
+      [rating, review_text, review_id, user_id, movie_id],
       (updateErr, updateResult) => {
         if (updateErr) {
           return res.status(500).json({
@@ -100,19 +100,45 @@ async function handleUpdateReview(req, res) {
   });
 }
 
-async function handleGetMovieReviews(req, res) {
-  const { movie_id } = req.params;
+// async function handleGetMovieReviews(req, res) {
+//   const { movie_id } = req.params;
 
-  // Query to get all reviews for a specific movie
+//   // Query to get all reviews for a specific movie
+//   const query = `
+//     SELECT reviews.*, users.username 
+//     FROM reviews 
+//     JOIN users ON reviews.user_id = users.user_id 
+//     WHERE movie_id = ?
+//     ORDER BY created_at DESC
+//   `;
+
+//   db.query(query, [movie_id], (err, results) => {
+//     if (err) {
+//       return res.status(500).json({
+//         error: "Failed to fetch reviews",
+//         err,
+//       });
+//     }
+
+//     res.status(200).json(results);
+//   });
+// }
+
+
+async function handleGetMovieReviewsByUserId(req, res) {
+  const { movie_id } = req.params;
+  const user_id = req.headers['user_id']; // Get the user_id from request headers
+
+  // Query to get reviews for a specific movie and user
   const query = `
     SELECT reviews.*, users.username 
     FROM reviews 
     JOIN users ON reviews.user_id = users.user_id 
-    WHERE movie_id = ?
+    WHERE movie_id = ? AND reviews.user_id = ?
     ORDER BY created_at DESC
   `;
 
-  db.query(query, [movie_id], (err, results) => {
+  db.query(query, [movie_id, user_id], (err, results) => {
     if (err) {
       return res.status(500).json({
         error: "Failed to fetch reviews",
@@ -124,8 +150,9 @@ async function handleGetMovieReviews(req, res) {
   });
 }
 
+
 module.exports = {
   handleAddReview,
   handleUpdateReview,
-  handleGetMovieReviews,
+  handleGetMovieReviewsByUserId,
 };
