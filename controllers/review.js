@@ -14,13 +14,28 @@ async function handleAddReview(req, res) {
     review_text,
   });
 
-  // Create new review
-  const query =
-    "INSERT INTO reviews (movie_id, user_id, rating, review_text) VALUES (?, ?, ?, ?)";
-  db.query(query, [movie_id, user_id, rating, review_text], (err) => {
-    if (err)
-      return res.status(500).json({ error: "Review creation failed", err });
-    res.status(201).json({ message: "Review created successfully" });
+  // Check if the user has already reviewed this movie
+  const checkQuery = "SELECT * FROM reviews WHERE movie_id = ? AND user_id = ?";
+  db.query(checkQuery, [movie_id, user_id], (checkErr, checkResults) => {
+    if (checkErr) {
+      return res.status(500).json({ error: "Database query error", checkErr });
+    }
+
+    if (checkResults.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "This user already rated and reviewed this movie!" });
+    }
+
+    // Create new review
+    const query =
+      "INSERT INTO reviews (movie_id, user_id, rating, review_text) VALUES (?, ?, ?, ?)";
+    db.query(query, [movie_id, user_id, rating, review_text], (err) => {
+      if (err) {
+        return res.status(500).json({ error: "Review creation failed", err });
+      }
+      res.status(201).json({ message: "Review created successfully" });
+    });
   });
 }
 
@@ -85,7 +100,6 @@ async function handleUpdateReview(req, res) {
   });
 }
 
-
 async function handleGetMovieReviews(req, res) {
   const { movie_id } = req.params;
 
@@ -100,9 +114,9 @@ async function handleGetMovieReviews(req, res) {
 
   db.query(query, [movie_id], (err, results) => {
     if (err) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: "Failed to fetch reviews",
-        err 
+        err,
       });
     }
 
