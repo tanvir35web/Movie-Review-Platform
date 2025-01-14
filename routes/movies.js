@@ -7,11 +7,13 @@ const { handleGetAllMovies,
     handleCreateMovie,
     handleUpdateMovie,
     handleDeleteMovie, 
-    handleMostRatedMovie} = require('../controllers/movies');
+    handleMostRatedMovie,
+    handleSearchMovies} = require('../controllers/movies');
 
 
 router.get('/', handleGetAllMovies);
 router.get('/top-rated', handleMostRatedMovie);
+router.get('/search', handleSearchMovies);
 
 router.get('/:id', handleGetMovieById);
 router.post('/', upload.single('poster_photo'), handleCreateMovie);

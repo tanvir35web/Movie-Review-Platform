@@ -111,6 +111,23 @@ async function handleMostRatedMovie(req, res) {
     });
   }
 
+
+  async function handleSearchMovies(req, res) {
+    const { title } = req.query;
+    
+    db.query(`
+      SELECT * FROM Movies 
+      WHERE title LIKE ?
+    `, [`%${title}%`], (err, results) => {
+      if (err) {
+        res.status(500).send("Database error to search movies");
+        return;
+      }
+      res.status(200).json(results);
+    });
+  }
+  
+
   
 module.exports = {
   handleGetAllMovies,
@@ -119,4 +136,5 @@ module.exports = {
   handleUpdateMovie,
   handleDeleteMovie,
   handleMostRatedMovie,
+  handleSearchMovies,
 };
