@@ -100,29 +100,29 @@ async function handleUpdateReview(req, res) {
   });
 }
 
-// async function handleGetMovieReviews(req, res) {
-//   const { movie_id } = req.params;
+async function handleGetMovieReviews(req, res) {
+  const { movie_id } = req.params;
 
-//   // Query to get all reviews for a specific movie
-//   const query = `
-//     SELECT reviews.*, users.username 
-//     FROM reviews 
-//     JOIN users ON reviews.user_id = users.user_id 
-//     WHERE movie_id = ?
-//     ORDER BY created_at DESC
-//   `;
+  // Query to get all reviews for a specific movie
+  const query = `
+    SELECT reviews.*, users.username 
+    FROM reviews 
+    JOIN users ON reviews.user_id = users.user_id 
+    WHERE movie_id = ?
+    ORDER BY created_at DESC
+  `;
 
-//   db.query(query, [movie_id], (err, results) => {
-//     if (err) {
-//       return res.status(500).json({
-//         error: "Failed to fetch reviews",
-//         err,
-//       });
-//     }
+  db.query(query, [movie_id], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Failed to fetch reviews",
+        err,
+      });
+    }
 
-//     res.status(200).json(results);
-//   });
-// }
+    res.status(200).json(results);
+  });
+}
 
 
 async function handleGetMovieReviewsByUserId(req, res) {
@@ -155,4 +155,5 @@ module.exports = {
   handleAddReview,
   handleUpdateReview,
   handleGetMovieReviewsByUserId,
+  handleGetMovieReviews,
 };
