@@ -56,7 +56,13 @@ async function handleGetUserById(req, res) {
       return res.status(400).json({ error: "User ID is required" });
     }
   
-    const query = "SELECT * FROM users WHERE user_id = ?";
+    const query = `
+      SELECT u.*, COUNT(r.review_id) AS review_count
+      FROM users u
+      LEFT JOIN reviews r ON u.user_id = r.user_id
+      WHERE u.user_id = ?
+      GROUP BY u.user_id
+    `;
     db.query(query, [user_id], (err, results) => {
       if (err) {
         return res.status(500).json({ error: "Database query error", err });
@@ -69,7 +75,6 @@ async function handleGetUserById(req, res) {
       res.status(200).json(results[0]);
     });
   }
-  
 
 async function handleProtectedRoute(req, res) {
     const token = req.headers.authorization;

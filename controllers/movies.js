@@ -127,8 +127,6 @@ async function handleMostRatedMovie(req, res) {
     });
   }
   
-
-  
 module.exports = {
   handleGetAllMovies,
   handleGetMovieById,
