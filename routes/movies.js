@@ -8,13 +8,15 @@ const { handleGetAllMovies,
     handleUpdateMovie,
     handleDeleteMovie, 
     handleMostRatedMovie,
-    handleSearchMovies} = require('../controllers/movies');
+    handleSearchMovies,
+    handleDeshboardCounts} = require('../controllers/movies');
 
 
 router.get('/', handleGetAllMovies);
 router.get('/top-rated', handleMostRatedMovie);
 router.get('/search', handleSearchMovies);
 
+router.get('/deshboard-counts', handleDeshboardCounts);
 router.get('/:id', handleGetMovieById);
 router.post('/', upload.single('poster_photo'), handleCreateMovie);
 router.patch('/:id', upload.single('poster_photo'), handleUpdateMovie);

@@ -126,7 +126,29 @@ async function handleMostRatedMovie(req, res) {
       res.status(200).json(results);
     });
   }
+
+  async function handleDeshboardCounts(req, res) {
+    const movieCountQuery = 'SELECT COUNT(*) AS movie_count FROM Movies';
+    const reviewCountQuery = 'SELECT COUNT(*) AS review_count FROM Reviews';
+    const userCountQuery = "SELECT COUNT(*) AS user_count FROM Users WHERE role = 'normal'";
   
+    try {
+      const [movieCountResult] = await db.promise().query(movieCountQuery);
+      const [reviewCountResult] = await db.promise().query(reviewCountQuery);
+      const [userCountResult] = await db.promise().query(userCountQuery);
+  
+      res.status(200).json({
+        movie_count: movieCountResult[0].movie_count,
+        review_count: reviewCountResult[0].review_count,
+        user_count: userCountResult[0].user_count,
+      });
+    } catch (err) {
+      res.status(500).json({ error: 'Database query error', err });
+    }
+  }
+
+
+
 module.exports = {
   handleGetAllMovies,
   handleGetMovieById,
@@ -135,4 +157,5 @@ module.exports = {
   handleDeleteMovie,
   handleMostRatedMovie,
   handleSearchMovies,
+  handleDeshboardCounts
 };
